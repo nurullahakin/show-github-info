@@ -1,0 +1,40 @@
+{
+	"name": "show-github-info",
+	"displayName": "Show Github Info",
+	"description": "Show Github Account and Repo Name",
+	"version": "0.0.1",
+	"publisher": "oktayaydogan",
+	"private": true,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/oktayaydogan/show-github-info"
+	},
+	"bugs": {
+		"url": "https://github.com/oktayaydogan/show-github-info/issues"
+	},
+	"engines": {
+		"vscode": "^1.73.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/extension.js",
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint \"src/**/*.ts\"",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "^22.3.0",
+		"@types/vscode": "^1.92.0",
+		"@typescript-eslint/eslint-plugin": "^7.14.0",
+		"@typescript-eslint/parser": "^7.14.0",
+		"eslint": "^8.26.0",
+		"typescript": "^5.5.2"
+	}
+}
