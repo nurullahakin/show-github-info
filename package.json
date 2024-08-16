@@ -3,7 +3,7 @@
 	"displayName": "Show Github Info",
 	"description": "Show Github Account and Repo Name",
 	"version": "0.0.1",
-	"publisher": "oktayaydogan",
+	"publisher": "oktayaydoan",
 	"private": true,
 	"license": "MIT",
 	"repository": {
@@ -14,7 +14,7 @@
 		"url": "https://github.com/oktayaydogan/show-github-info/issues"
 	},
 	"engines": {
-		"vscode": "^1.73.0"
+		"vscode": "^1.92.0"
 	},
 	"categories": [
 		"Other"
