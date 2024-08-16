@@ -16,7 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
 		myStatusBarItem.show();
 	}
 }
-
 function getRepoAndAccountName(): string | null {
 	try {
 		const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -34,15 +33,19 @@ function getRepoAndAccountName(): string | null {
 		// .git/config dosyasını oku
 		const configContent = fs.readFileSync(gitConfigPath, "utf-8");
 
-		// URL'yi bul
-		const remoteUrlMatch = configContent.match(
-			/url = https:\/\/github\.com\/(.+)\.git/
-		);
-		if (remoteUrlMatch) {
-			return remoteUrlMatch[1]; // oktayaydogan/management-service gibi bir string döndürür
-		} else {
-			return null;
+		// HTTPS formatındaki URL'yi bul (örneğin: https://github.com/oktayaydogan/management-service.git)
+		let match = configContent.match(/url = https:\/\/github\.com\/(.+)\.git/);
+		if (match) {
+			return match[1]; // oktayaydogan/management-service gibi bir string döndürür
 		}
+
+		// SSH formatındaki URL'yi bul (örneğin: git@github.com:turkpin/storefront-service.git)
+		match = configContent.match(/url = git@github\.com:(.+)\.git/);
+		if (match) {
+			return match[1]; // turkpin/storefront-service gibi bir string döndürür
+		}
+
+		return null; // Eğer uygun bir eşleşme bulunmazsa null döndür
 	} catch (error) {
 		console.error("Error getting Git repo and account name:", error);
 		return null;
