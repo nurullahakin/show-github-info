@@ -2,50 +2,64 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 
-let myStatusBarItem: vscode.StatusBarItem;
+let originStatusItem: vscode.StatusBarItem;
+let lastOriginInfo: string | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
-	myStatusBarItem = vscode.window.createStatusBarItem(
-		vscode.StatusBarAlignment.Left,
-		999999999
-	);
+    originStatusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 999999999);
+    context.subscriptions.push(originStatusItem);
 
-	const repoInfo = getRepoAndAccountName();
-	if (repoInfo) {
-		myStatusBarItem.text = `$(repo) ${repoInfo}`;
-		myStatusBarItem.show();
-	}
+    vscode.workspace.onDidChangeWorkspaceFolders(updateOriginStatusItem, null, context.subscriptions);
+    vscode.window.onDidChangeActiveTextEditor(updateOriginStatusItem, null, context.subscriptions);
+
+    updateOriginStatusItem();
+    originStatusItem.show();
 }
 
-function getRepoAndAccountName(): string | null {
-	try {
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (!workspaceFolders) {
-			return null;
-		}
+function updateOriginStatusItem() {
+    const originInfo = getActiveWorkspaceOriginInfo() ?? "user/repo";
+    originStatusItem.text = `$(repo) ${originInfo}`;
+}
 
-		const workspacePath = workspaceFolders[0].uri.fsPath;
-		const gitConfigPath = path.join(workspacePath, ".git", "config");
+function getActiveWorkspaceOriginInfo(): string | null {
+    try {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders) {
+            return null;
+        }
+        let activeWorkspace: vscode.WorkspaceFolder | undefined;
+        if (vscode.window.activeTextEditor) {
+            activeWorkspace = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri);
+        }
+        if (!activeWorkspace && lastOriginInfo) {
+            return lastOriginInfo;
+        }
+        const selectedWorkspace = activeWorkspace ?? workspaceFolders[0];
+        return getOriginInfo(selectedWorkspace.uri.fsPath);
+    } catch (error) {
+        console.error("Error getting git origin info:", error);
+    }
+    return null;
+}
 
-		if (!fs.existsSync(gitConfigPath)) {
-			return null;
-		}
+function getOriginInfo(workspacePath: string): string | null {
+    const gitConfigPath = path.join(workspacePath, ".git", "config");
 
-		const configContent = fs.readFileSync(gitConfigPath, "utf-8");
+    if (!fs.existsSync(gitConfigPath)) {
+        return null;
+    }
 
-		let match = configContent.match(/url = https:\/\/github\.com\/(.+)\.git/);
-		if (match) {
-			return match[1];
-		}
+    const configContent = fs.readFileSync(gitConfigPath, "utf-8");
 
-		match = configContent.match(/url = git@github\.com:(.+)\.git/);
-		if (match) {
-			return match[1];
-		}
+    let match = configContent.match(/url = https:\/\/github\.com\/(.+)\.git/);
+    if (match) {
+        return match[1];
+    }
 
-		return null;
-	} catch (error) {
-		console.error("Error getting Git repo and account name:", error);
-		return null;
-	}
+    match = configContent.match(/url = git@github\.com:(.+)\.git/);
+    if (match) {
+        return match[1];
+    }
+
+    return null;
 }
