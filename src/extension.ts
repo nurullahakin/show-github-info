@@ -3,29 +3,39 @@ import * as fs from "fs";
 import * as path from "path";
 
 let originStatusItem: vscode.StatusBarItem;
-const defaultOriginInfo = "user/repo";
+let lastOriginInfo: string | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
     originStatusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 999999999);
     context.subscriptions.push(originStatusItem);
+
+    vscode.workspace.onDidChangeWorkspaceFolders(updateOriginStatusItem, null, context.subscriptions);
+    vscode.window.onDidChangeActiveTextEditor(updateOriginStatusItem, null, context.subscriptions);
 
     updateOriginStatusItem();
     originStatusItem.show();
 }
 
 function updateOriginStatusItem() {
-    const originInfo = getWorkspaceOriginInfo() ?? defaultOriginInfo;
+    const originInfo = getActiveWorkspaceOriginInfo() ?? "user/repo";
     originStatusItem.text = `$(repo) ${originInfo}`;
 }
 
-function getWorkspaceOriginInfo(): string | null {
+function getActiveWorkspaceOriginInfo(): string | null {
     try {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (!workspaceFolders) {
             return null;
         }
-        const workspacePath = workspaceFolders[0].uri.fsPath;
-        return getOriginInfo(workspacePath);
+        let activeWorkspace: vscode.WorkspaceFolder | undefined;
+        if (vscode.window.activeTextEditor) {
+            activeWorkspace = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri);
+        }
+        if (!activeWorkspace && lastOriginInfo) {
+            return lastOriginInfo;
+        }
+        const selectedWorkspace = activeWorkspace ?? workspaceFolders[0];
+        return getOriginInfo(selectedWorkspace.uri.fsPath);
     } catch (error) {
         console.error("Error getting git origin info:", error);
     }
