@@ -39,10 +39,8 @@ function getRepoAndAccountName(): string | null {
         if (match) {
             return match[1];
         }
-
-        return null;
     } catch (error) {
         console.error("Error getting Git repo and account name:", error);
-        return null;
     }
+    return null;
 }
