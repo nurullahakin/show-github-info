@@ -10,12 +10,12 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(originStatusItem);
 
     updateOriginStatusItem();
+    originStatusItem.show();
 }
 
 function updateOriginStatusItem() {
     const originInfo = getWorkspaceOriginInfo() ?? defaultOriginInfo;
     originStatusItem.text = `$(repo) ${originInfo}`;
-    originStatusItem.show();
 }
 
 function getWorkspaceOriginInfo(): string | null {
