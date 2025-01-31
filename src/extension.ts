@@ -3,15 +3,14 @@ import * as fs from "fs";
 import * as path from "path";
 
 let myStatusBarItem: vscode.StatusBarItem;
+const defaultRepoInfo = "user/repo";
 
 export function activate(context: vscode.ExtensionContext) {
     myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 999999999);
 
-    const repoInfo = getRepoAndAccountName();
-    if (repoInfo) {
-        myStatusBarItem.text = `$(repo) ${repoInfo}`;
-        myStatusBarItem.show();
-    }
+    const repoInfo = getRepoAndAccountName() ?? defaultRepoInfo;
+    myStatusBarItem.text = `$(repo) ${repoInfo}`;
+    myStatusBarItem.show();
 }
 
 function getRepoAndAccountName(): string | null {
