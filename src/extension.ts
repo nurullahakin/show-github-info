@@ -19,27 +19,32 @@ function getRepoAndAccountName(): string | null {
         if (!workspaceFolders) {
             return null;
         }
-
         const workspacePath = workspaceFolders[0].uri.fsPath;
-        const gitConfigPath = path.join(workspacePath, ".git", "config");
-
-        if (!fs.existsSync(gitConfigPath)) {
-            return null;
-        }
-
-        const configContent = fs.readFileSync(gitConfigPath, "utf-8");
-
-        let match = configContent.match(/url = https:\/\/github\.com\/(.+)\.git/);
-        if (match) {
-            return match[1];
-        }
-
-        match = configContent.match(/url = git@github\.com:(.+)\.git/);
-        if (match) {
-            return match[1];
-        }
+        return getOriginInfo(workspacePath);
     } catch (error) {
         console.error("Error getting Git repo and account name:", error);
     }
+    return null;
+}
+
+function getOriginInfo(workspacePath: string): string | null {
+    const gitConfigPath = path.join(workspacePath, ".git", "config");
+
+    if (!fs.existsSync(gitConfigPath)) {
+        return null;
+    }
+
+    const configContent = fs.readFileSync(gitConfigPath, "utf-8");
+
+    let match = configContent.match(/url = https:\/\/github\.com\/(.+)\.git/);
+    if (match) {
+        return match[1];
+    }
+
+    match = configContent.match(/url = git@github\.com:(.+)\.git/);
+    if (match) {
+        return match[1];
+    }
+
     return null;
 }
