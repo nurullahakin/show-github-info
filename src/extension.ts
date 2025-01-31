@@ -2,15 +2,15 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 
-let myStatusBarItem: vscode.StatusBarItem;
-const defaultRepoInfo = "user/repo";
+let originStatusItem: vscode.StatusBarItem;
+const defaultOriginInfo = "user/repo";
 
 export function activate(context: vscode.ExtensionContext) {
-    myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 999999999);
+    originStatusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 999999999);
 
-    const repoInfo = getWorkspaceOriginInfo() ?? defaultRepoInfo;
-    myStatusBarItem.text = `$(repo) ${repoInfo}`;
-    myStatusBarItem.show();
+    const originInfo = getWorkspaceOriginInfo() ?? defaultOriginInfo;
+    originStatusItem.text = `$(repo) ${originInfo}`;
+    originStatusItem.show();
 }
 
 function getWorkspaceOriginInfo(): string | null {
