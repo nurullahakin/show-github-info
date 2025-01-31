@@ -8,12 +8,12 @@ const defaultRepoInfo = "user/repo";
 export function activate(context: vscode.ExtensionContext) {
     myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 999999999);
 
-    const repoInfo = getRepoAndAccountName() ?? defaultRepoInfo;
+    const repoInfo = getWorkspaceOriginInfo() ?? defaultRepoInfo;
     myStatusBarItem.text = `$(repo) ${repoInfo}`;
     myStatusBarItem.show();
 }
 
-function getRepoAndAccountName(): string | null {
+function getWorkspaceOriginInfo(): string | null {
     try {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (!workspaceFolders) {
@@ -22,7 +22,7 @@ function getRepoAndAccountName(): string | null {
         const workspacePath = workspaceFolders[0].uri.fsPath;
         return getOriginInfo(workspacePath);
     } catch (error) {
-        console.error("Error getting Git repo and account name:", error);
+        console.error("Error getting git origin info:", error);
     }
     return null;
 }
