@@ -7,7 +7,12 @@ const defaultOriginInfo = "user/repo";
 
 export function activate(context: vscode.ExtensionContext) {
     originStatusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 999999999);
+    context.subscriptions.push(originStatusItem);
 
+    updateOriginStatusItem();
+}
+
+function updateOriginStatusItem() {
     const originInfo = getWorkspaceOriginInfo() ?? defaultOriginInfo;
     originStatusItem.text = `$(repo) ${originInfo}`;
     originStatusItem.show();
